@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My To-Do List</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 500px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        form { display: flex; margin-top: 20px; }
+        input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px 0 0 4px; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 0 4px 4px 0; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        ul { list-style: none; padding: 0; margin-top: 20px; }
+        li { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 10px; margin-bottom: 8px; border-radius: 4px; border: 1px solid #eee; }
+        .completed { text-decoration: line-through; color: gray; }
+        .actions form { display: inline; margin: 0; }
+        .delete-btn { background-color: #dc3545; border-radius: 4px; }
+        .delete-btn:hover { background-color: #c82333; }
+        .logout { color: #dc3545; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3>Welcome, {{ name }}</h3>
+            <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+        </div>
+
+        <form action="{{ url_for('add_todo') }}" method="POST">
+            <input type="text" name="title" placeholder="Add a new task..." required>
+            <button type="submit">Add</button>
+        </form>
+
+        <ul>
+            {% for todo in todos %}
+            <li>
+                <form action="{{ url_for('update_todo', todo_id=todo.todo_id) }}" method="POST" style="display: flex; align-items: center; flex: 1; gap: 10px;">
+                    <input type="checkbox" name="is_done" value="1" {% if todo.is_done %}checked{% endif %} onchange="this.form.submit()">
+                    <input type="text" name="title" value="{{ todo.title }}" style="flex: 1; border: none; background: transparent; font-size: 16px;" {% if todo.is_done %}class="completed"{% endif %}>
+                    <button type="submit" style="padding: 5px 10px; font-size: 12px; border-radius: 4px;">Update</button>
+                </form>
+                <div class="actions">
+                    <form action="{{ url_for('delete_todo', todo_id=todo.todo_id) }}" method="POST">
+                        <button type="submit" class="delete-btn" style="padding: 5px 10px; font-size: 12px;">Delete</button>
+                    </form>
+                </div>
+            </li>
+            {% else %}
+            <p style="text-align: center; color: #888;">No tasks yet. Add one above!</p>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
